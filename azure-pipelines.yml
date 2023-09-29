@@ -11,7 +11,7 @@ pool:
 variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
 jobs:
-- job: Init and lint
+- job: init
   steps:
   - task: NodeTool@0
     inputs:
