@@ -59,6 +59,6 @@ jobs:
           "npm" | "$(Agent.OS)"
         path: $(npm_config_cache)
     - script: npm ci
-    - script: npx jest --shard $(shard)/10
+    - script: npx jest --shard $(shard)/12
       displayName: jest tests shard \#$(shard)
   
