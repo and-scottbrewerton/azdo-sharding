@@ -41,6 +41,8 @@ jobs:
   strategy:
     matrix: $[ dependencies.generator.outputs['mtrx.test_strategy'] ]
   steps:
+    - download: current
+      artifact: app
     - script: cat build/artefact.txt
       displayName: show persistence
     - task: NodeTool@0
