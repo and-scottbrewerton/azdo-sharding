@@ -13,17 +13,7 @@ variables:
 jobs:
 - job: init
   steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '20.x'
-    displayName: 'Install Node.js'
-  - task: Cache@2
-    inputs:
-      key: '"npm" | "$(Agent.OS) | package-lock.json'
-      restoreKeys: |
-        "npm" | "$(Agent.OS)"
-      path: $(npm_config_cache)
-  - script: npm ci
+  - template: .azure/templates/steps/setup-npm.yml
   - script: mkdir build && echo "something something" > build/artefact.txt
     displayName: pseudo build artifacts
   - publish: $(Build.SourcesDirectory)/build
@@ -48,17 +38,7 @@ jobs:
         ls
         cat build/artefact.txt
       displayName: show persistence
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '20.x'
-      displayName: 'Install Node.js'
-    - task: Cache@2
-      inputs:
-        key: '"npm" | "$(Agent.OS) | package-lock.json'
-        restoreKeys: |
-          "npm" | "$(Agent.OS)"
-        path: $(npm_config_cache)
-    - script: npm ci
+    - template: .azure/templates/steps/setup-npm.yml
     - script: npx jest --shard $(shard)/12
       displayName: jest tests shard \#$(shard)
   
