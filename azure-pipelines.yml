@@ -33,7 +33,7 @@ jobs:
 - job: generator
   steps:
   - bash: |
-      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]$(jq -n -c '[range(1;10) | {(["shard", .|tostring ] | join("")) : {"shard" : .} }] | add')"
+      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]$(jq -n -c '[range(1;10) | {(["shard", .|tostring ] | join("")) : {"shard" : .|tostring} }] | add')"
     name: mtrx
 - job: runner
   dependsOn: 
