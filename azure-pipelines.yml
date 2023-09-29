@@ -15,7 +15,7 @@ jobs:
   steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '16.x'
+      versionSpec: '20.x'
     displayName: 'Install Node.js'
   - task: Cache@2
     inputs:
@@ -33,10 +33,12 @@ jobs:
 - job: generator
   steps:
   - bash: |
-      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]{$(jq -n -c '[range(1;10) | {(["shard", .|tostring ] | join("")) : {"shard" : .} }] | add')}"
+      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]$(jq -n -c '[range(1;10) | {(["shard", .|tostring ] | join("")) : {"shard" : .} }] | add')"
     name: mtrx
 - job: runner
-  dependsOn: generator
+  dependsOn: 
+  - generator
+  - init
   strategy:
     matrix: $[ dependencies.generator.outputs['mtrx.test_strategy'] ]
   steps:
@@ -44,7 +46,7 @@ jobs:
       displayName: show persistence
     - task: NodeTool@0
       inputs:
-        versionSpec: '16.x'
+        versionSpec: '20.x'
       displayName: 'Install Node.js'
     - task: Cache@2
       inputs:
