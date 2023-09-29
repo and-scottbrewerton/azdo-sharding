@@ -22,7 +22,7 @@ jobs:
 - job: generator
   steps:
   - bash: |
-      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]$(jq -n -c '[range(1;13) | {(["shard", .|tostring ] | join("")) : {"shard" : .|tostring} }] | add')"
+      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]$(jq -n -c '[range(1;11) | {(["shard", .|tostring ] | join("")) : {"shard" : .|tostring} }] | add')"
     name: mtrx
 - job: runner
   dependsOn: 
@@ -39,6 +39,6 @@ jobs:
         cat build/artefact.txt
       displayName: show persistence
     - template: .azure/templates/steps/setup-npm.yml
-    - script: npx jest --shard $(shard)/12
+    - script: npx jest --shard $(shard)/10
       displayName: jest tests shard \#$(shard)
   
