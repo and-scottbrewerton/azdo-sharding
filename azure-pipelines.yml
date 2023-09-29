@@ -43,7 +43,7 @@ jobs:
   steps:
     - download: current
       artifact: app
-    - script: cat build/artefact.txt
+    - script: ls && cat $(Build.SourcesDirectory)/build/artefact.txt
       displayName: show persistence
     - task: NodeTool@0
       inputs:
