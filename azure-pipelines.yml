@@ -10,6 +10,7 @@ pool:
   vmImage: ubuntu-latest
 variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
+  shard_count: 10
 jobs:
 - job: init
   steps:
@@ -22,7 +23,7 @@ jobs:
 - job: generator
   steps:
   - bash: |
-      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]$(jq -n -c '[range(1;11) | {(["shard", .|tostring ] | join("")) : {"shard" : .|tostring} }] | add')"
+      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]$(jq -n -c --arg v "$shard_count" '[range(0;$v|tonumber) | {(["shard", (.+1)|tostring ] | join("")) : {"shard" : (.+1)|tostring}}] | add')"
     name: mtrx
 - job: runner
   dependsOn: 
@@ -39,6 +40,6 @@ jobs:
         cat build/artefact.txt
       displayName: show persistence
     - template: .azure/templates/steps/setup-npm.yml
-    - script: npx jest --shard $(shard)/10
-      displayName: jest tests shard \#$(shard)
+    - script: npx jest --shard $(shard)/$(shard_count)
+      displayName: jest tests shard $(shard)
   
