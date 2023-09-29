@@ -44,7 +44,7 @@ jobs:
     - download: current
       artifact: app
     - script: |
-        mv $(Pipeline.Workspace)/app/* ./
+        mv $(Pipeline.Workspace)/app ./build
         ls
         cat build/artefact.txt
       displayName: show persistence
