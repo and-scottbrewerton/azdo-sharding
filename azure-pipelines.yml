@@ -8,14 +8,51 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
-
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
-
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+variables:
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+jobs:
+- job: Init and lint
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '16.x'
+    displayName: 'Install Node.js'
+  - task: Cache@2
+    inputs:
+      key: '"npm" | "$(Agent.OS) | package-lock.json'
+      restoreKeys: |
+        "npm" | "$(Agent.OS)"
+      path: $(npm_config_cache)
+  - script: npm ci
+  - script: npx lint
+  - script: mkdir build && echo "something something" > artefact.txt
+    description: pseudo build artifacts
+  - publish: $(Build.SourcesDirectory)/build
+    artifact: app
+    displayName: Persist build
+- job: generator
+  steps:
+  - bash: |
+      echo "##vso[task.setVariable variable=test_strategy;isOutput=true]$(jq -n '[range(1;10) | {(["shard", .|tostring ] | join("")) : {"shard" : .} }] | add')"
+    name: mtrx
+- job: runner
+  dependsOn: generator
+  strategy:
+    matrix: $[ dependencies.generator.outputs['mtrx.test_strategy'] ]
+  steps:
+    - script: cat build/artefact.txt
+      description: show persistence
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '16.x'
+      displayName: 'Install Node.js'
+    - task: Cache@2
+      inputs:
+        key: '"npm" | "$(Agent.OS) | package-lock.json'
+        restoreKeys: |
+          "npm" | "$(Agent.OS)"
+        path: $(npm_config_cache)
+    - script: npm ci
+    - script: npx jest --shard $(shard)/10
+      description: jest tests shard \#$(shard)
+  
