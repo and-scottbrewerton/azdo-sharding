@@ -26,7 +26,7 @@ jobs:
   - script: npm ci
   - script: npx lint
   - script: mkdir build && echo "something something" > artefact.txt
-    description: pseudo build artifacts
+    displayName: pseudo build artifacts
   - publish: $(Build.SourcesDirectory)/build
     artifact: app
     displayName: Persist build
@@ -41,7 +41,7 @@ jobs:
     matrix: $[ dependencies.generator.outputs['mtrx.test_strategy'] ]
   steps:
     - script: cat build/artefact.txt
-      description: show persistence
+      displayName: show persistence
     - task: NodeTool@0
       inputs:
         versionSpec: '16.x'
@@ -54,5 +54,5 @@ jobs:
         path: $(npm_config_cache)
     - script: npm ci
     - script: npx jest --shard $(shard)/10
-      description: jest tests shard \#$(shard)
+      displayName: jest tests shard \#$(shard)
   
