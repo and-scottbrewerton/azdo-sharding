@@ -43,7 +43,10 @@ jobs:
   steps:
     - download: current
       artifact: app
-    - script: ls && cat $(Build.SourcesDirectory)/build/artefact.txt
+    - script: |
+        mv $(Pipeline.Workspace)/app/* ./
+        ls
+        cat build/artefact.txt
       displayName: show persistence
     - task: NodeTool@0
       inputs:
