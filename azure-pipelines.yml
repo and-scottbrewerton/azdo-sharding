@@ -24,7 +24,7 @@ jobs:
         "npm" | "$(Agent.OS)"
       path: $(npm_config_cache)
   - script: npm ci
-  - script: mkdir build && echo "something something" > artefact.txt
+  - script: mkdir build && echo "something something" > build/artefact.txt
     displayName: pseudo build artifacts
   - publish: $(Build.SourcesDirectory)/build
     artifact: app
